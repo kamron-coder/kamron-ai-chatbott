@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kamron AI Chatbot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-container">
+    <h2>🤖 Kamron AI</h2>
+    <div id="messages" class="messages"></div>
+    <div class="input-group">
+      <input type="text" id="input" placeholder="Savolingizni yozing..." autocomplete="off" />
+      <button onclick="sendMessage()">📤</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const messages = document.getElementById("messages");
+      messages.innerHTML += `<div class="msg user">🧍‍♂️ ${text}</div>`;
+      input.value = "";
+
+      try {
+        const res = await fetch("http://localhost:3000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await res.json();
+        messages.innerHTML += `<div class="msg bot">🤖 ${data.reply}</div>`;
+      } catch (error) {
+        messages.innerHTML += `<div class="msg bot error">⚠️ AI javob bera olmadi.</div>`;
+      }
+
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Enter tugmasi bilan ham yuborish
+    document.getElementById("input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
